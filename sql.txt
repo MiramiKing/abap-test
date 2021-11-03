@@ -1,0 +1,55 @@
+Выполнено в PostgreSQL
+
+
+
+CREATE TABLE IF NOT EXISTS public.company
+(
+    "companyId" integer NOT NULL DEFAULT nextval('"company_companyId_seq"'::regclass),
+    "companyName" text COLLATE pg_catalog."default",
+    "companyContry" text COLLATE pg_catalog."default",
+    CONSTRAINT company_pkey PRIMARY KEY ("companyId")
+)
+
+CREATE TABLE IF NOT EXISTS public.phone
+(
+    "phoneId" integer NOT NULL DEFAULT nextval('"phone_phoneId_seq"'::regclass),
+    "phoneModel" character varying COLLATE pg_catalog."default",
+    "companyId" integer,
+    price integer,
+    CONSTRAINT phone_pkey PRIMARY KEY ("phoneId"),
+    CONSTRAINT company FOREIGN KEY ("companyId")
+        REFERENCES public.company ("companyId") MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+)
+
+
+1.SELECT "companyName",
+	COUNT("phoneId") AS PHONES_COUNT,
+	SUM(PRICE) AS PHONES_SUM
+FROM COMPANY
+JOIN PHONE ON PHONE."companyId" = COMPANY."companyId"
+GROUP BY "companyName";
+
+2.SELECT "companyName",
+	AVG(PRICE) AS MAX_AVG
+FROM COMPANY
+JOIN PHONE ON PHONE."companyId" = COMPANY."companyId"
+GROUP BY "companyName"
+ORDER BY MAX_AVG DESC FETCH FIRST 1 ROWS WITH TIES;
+
+3.SELECT COUNT(COMPANY."companyId") AS COUNT_CHINA_PHONES
+FROM COMPANY
+JOIN PHONE ON PHONE."companyId" = COMPANY."companyId"
+WHERE "companyContry" = 'China';
+
+4.SELECT "companyName",
+	   "phoneModel",
+	    PRICE
+FROM PHONE
+JOIN COMPANY ON PHONE."companyId" = COMPANY."companyId"
+WHERE (PHONE."companyId", PHONE.PRICE) IN
+		(SELECT PHONE."companyId",
+			MAX(PHONE.PRICE)
+			FROM PHONE
+			GROUP BY PHONE."companyId")
