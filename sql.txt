@@ -31,19 +31,19 @@ FROM COMPANY
 JOIN PHONE ON PHONE."companyId" = COMPANY."companyId"
 GROUP BY "companyName";
 
-2.SELECT "companyName",
+2a.SELECT "companyName",
 	AVG(PRICE) AS MAX_AVG
 FROM COMPANY
 JOIN PHONE ON PHONE."companyId" = COMPANY."companyId"
 GROUP BY "companyName"
 ORDER BY MAX_AVG DESC FETCH FIRST 1 ROWS WITH TIES;
 
-3.SELECT COUNT(COMPANY."companyId") AS COUNT_CHINA_PHONES
+2b.SELECT COUNT(COMPANY."companyId") AS COUNT_CHINA_PHONES
 FROM COMPANY
 JOIN PHONE ON PHONE."companyId" = COMPANY."companyId"
 WHERE "companyContry" = 'China';
 
-4.SELECT "companyName",
+2c.SELECT "companyName",
 	   "phoneModel",
 	    PRICE
 FROM PHONE
